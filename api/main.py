@@ -14,14 +14,9 @@ scaler_path = os.path.join(BASE_DIR, "scaler.pkl")
 app = FastAPI(title="PCOS Prediction API", version="1.0")
 
 # ---------- CORS ----------
-origins = [
-    "https://yara-women-health-9izaivoqn-shriyas-projects-0fb35217.vercel.app",
-    "https://yara-women-health-git-main-shriyas-projects-0fb35217.vercel.app",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # or ["*"] while testing
+    allow_origins=["*"],          # TEMP: allow all origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
