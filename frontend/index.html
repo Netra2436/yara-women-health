@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>YARA — Wellness Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="dashboard-shell">
+    <header class="dashboard-header">
+      <img src="assets/yara-logo.png" alt="YARA Logo" class="logo" />
+      <h1>YARA</h1>
+      <p>All your women’s wellness tools in one gentle space.</p>
+    </header>
+
+    <nav class="nav-tabs">
+      <a href="index.html" class="nav-tab active">Dashboard</a>
+      <a href="pcos.html" class="nav-tab">PCOS Prediction</a>
+      <a href="tracker.html" class="nav-tab">Period Tracker</a>
+      <a href="blogs.html" class="nav-tab">Blogs</a>
+    </nav>
+
+    <section class="card-grid">
+      <article class="feature-card">
+        <h2>PCOS Risk Prediction</h2>
+        <p>Check your PCOS likelihood using simple health and lifestyle questions powered by YARA’s ML model.</p>
+        <a href="pcos.html">Open Predictor</a>
+      </article>
+
+      <article class="feature-card">
+        <h2>Period Tracker</h2>
+        <p>Track cycles, estimate next period and fertile window, and keep a gentle eye on irregular patterns.</p>
+        <a href="tracker.html">Open Tracker</a>
+      </article>
+
+      <article class="feature-card">
+        <h2>Wellness & PCOS Blogs</h2>
+        <p>Read quick, friendly explainers on PCOS, hormones, exercise, nutrition, and self‑care routines.</p>
+        <a href="blogs.html">Read Blogs</a>
+      </article>
+    </section>
+  </div>
+
+  <!-- Sakhi floating assistant -->
+  <button id="sakhi-toggle" class="sakhi-button" type="button" title="Chat with Sakhi">
+    <img src="assets/yara-logo.png" alt="Sakhi" />
+  </button>
+
+  <div id="sakhi-panel" class="sakhi-panel hidden">
+    <div class="sakhi-panel-header">
+      <span>🩷 Sakhi</span>
+      <button class="sakhi-close" id="sakhi-close" type="button">&times;</button>
+    </div>
+    <div id="sakhi-messages" class="sakhi-messages"></div>
+    <div class="sakhi-input-row">
+      <input id="sakhi-input" type="text" placeholder="Ask about your cycle, mood..." />
+      <button id="sakhi-send" type="button">Send</button>
+    </div>
+  </div>
+
+  <script src="sakhi.js"></script>
+</body>
+</html>

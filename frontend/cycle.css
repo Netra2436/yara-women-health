@@ -1,0 +1,60 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #fff4f9;
+  color: #442233;
+  margin: 0;
+}
+
+.container {
+  max-width: 700px;
+  margin: auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(216, 140, 190, 0.2);
+}
+
+.logo {
+  height: 50px;
+  display: block;
+  margin: auto;
+}
+
+h1 {
+  text-align: center;
+  color: #b86a8a;
+}
+
+form {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+}
+
+input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+button {
+  background: #c77895;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+
+.pill {
+  background: #fdd3e6;
+  padding: 1rem;
+  border-radius: 16px;
+  margin-top: 1rem;
+  text-align: center;
+}

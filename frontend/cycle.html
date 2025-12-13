@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>YARA — Cycle Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="tracker.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="assets/yara-logo.png" class="logo" />
+      <h1>YARA</h1>
+      <p>Understand your flow 🌷</p>
+    </header>
+
+    <form id="log-form">
+      <label>Last Period:
+        <input type="date" name="start_date" required />
+      </label>
+      <label>Cycle Length:
+        <input type="number" name="cycle_length" value="28" required />
+      </label>
+      <button type="submit">Save</button>
+    </form>
+
+    <section id="summary" class="hidden">
+      <h3>Next Period: <span id="next-date"></span></h3>
+      <h3>Current Phase: <span id="phase"></span></h3>
+    </section>
+
+    <div id="calendar"></div>
+  </div>
+</body>
+</html>

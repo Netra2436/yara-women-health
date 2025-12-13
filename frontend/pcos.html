@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>YARA — PCOS Predictor</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="assets/yara-logo.png" alt="YARA Logo" class="logo" />
+      <h1>YARA</h1>
+      <p class="tagline">Empowering Wellness, One Prediction at a Time</p>
+    </header>
+
+    <form id="pcos-form">
+      <div class="form-row">
+        <label for="age">Age (years):</label>
+        <input name="age" id="age" type="number" required />
+      </div>
+      <div class="form-row">
+        <label for="weight">Weight (kg):</label>
+        <input name="weight" id="weight" type="number" required />
+      </div>
+      <div class="form-row">
+        <label for="height">Height (cm):</label>
+        <input name="height" id="height" type="number" required />
+      </div>
+      <div class="form-row">
+        <label for="bmi">BMI:</label>
+        <input name="bmi" id="bmi" type="number" step="0.1" required />
+      </div>
+      <div class="form-row">
+        <label for="blood_group">Blood Group:</label>
+        <select name="blood_group" id="blood_group" required>
+          <option value="">Select</option>
+          <option value="A+">A+</option>
+          <option value="A-">A−</option>
+          <option value="B+">B+</option>
+          <option value="B-">B−</option>
+          <option value="AB+">AB+</option>
+          <option value="AB-">AB−</option>
+          <option value="O+">O+</option>
+          <option value="O-">O−</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="cycle">Cycle Type:</label>
+        <select name="cycle" id="cycle" required>
+          <option value="">Select</option>
+          <option value="Regular">Regular</option>
+          <option value="Irregular">Irregular</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="cycle_length">Cycle Length (days):</label>
+        <input name="cycle_length" id="cycle_length" type="number" required />
+      </div>
+      <div class="form-row">
+        <label for="marriage_years">Marriage Duration (years):</label>
+        <input name="marriage_years" id="marriage_years" type="number" required />
+      </div>
+      <div class="form-row">
+        <label>Pregnant:</label>
+        <div class="radio-group">
+          <input type="radio" id="pregnant_yes" name="pregnant" value="Yes" required>
+          <label for="pregnant_yes">Yes</label>
+          <input type="radio" id="pregnant_no" name="pregnant" value="No">
+          <label for="pregnant_no">No</label>
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="abortions">Abortions:</label>
+        <input name="abortions" id="abortions" type="number" required />
+      </div>
+      <div class="form-row">
+        <label for="hip">Hip (cm):</label>
+        <input name="hip" id="hip" type="number" required />
+      </div>
+      <div class="form-row">
+        <label for="waist">Waist (cm):</label>
+        <input name="waist" id="waist" type="number" required />
+      </div>
+      <div class="form-row">
+        <label>Weight Gain:</label>
+        <div class="radio-group">
+          <input type="radio" id="weight_gain_yes" name="weight_gain" value="Yes" required>
+          <label for="weight_gain_yes">Yes</label>
+          <input type="radio" id="weight_gain_no" name="weight_gain" value="No">
+          <label for="weight_gain_no">No</label>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Hair Growth:</label>
+        <div class="radio-group">
+          <input type="radio" id="hair_growth_yes" name="hair_growth" value="Yes" required>
+          <label for="hair_growth_yes">Yes</label>
+          <input type="radio" id="hair_growth_no" name="hair_growth" value="No">
+          <label for="hair_growth_no">No</label>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Skin Darkening:</label>
+        <div class="radio-group">
+          <input type="radio" id="skin_darkening_yes" name="skin_darkening" value="Yes" required>
+          <label for="skin_darkening_yes">Yes</label>
+          <input type="radio" id="skin_darkening_no" name="skin_darkening" value="No">
+          <label for="skin_darkening_no">No</label>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Hair Loss:</label>
+        <div class="radio-group">
+          <input type="radio" id="hair_loss_yes" name="hair_loss" value="Yes" required>
+          <label for="hair_loss_yes">Yes</label>
+          <input type="radio" id="hair_loss_no" name="hair_loss" value="No">
+          <label for="hair_loss_no">No</label>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Pimples:</label>
+        <div class="radio-group">
+          <input type="radio" id="pimples_yes" name="pimples" value="Yes" required>
+          <label for="pimples_yes">Yes</label>
+          <input type="radio" id="pimples_no" name="pimples" value="No">
+          <label for="pimples_no">No</label>
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="fast_food">Fast Food Consumption:</label>
+        <select name="fast_food" id="fast_food" required>
+          <option value="">Select</option>
+          <option value="Frequently">Frequently</option>
+          <option value="Occasionally">Occasionally</option>
+          <option value="Rarely">Rarely</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Exercise Regularly:</label>
+        <div class="radio-group">
+          <input type="radio" id="exercise_yes" name="exercise" value="Yes" required>
+          <label for="exercise_yes">Yes</label>
+          <input type="radio" id="exercise_no" name="exercise" value="No">
+          <label for="exercise_no">No</label>
+        </div>
+      </div>
+      <button type="submit">Predict</button>
+    </form>
+
+    <h3 id="result"></h3>
+  </div>
+    <!-- Sakhi floating assistant -->
+  <button id="sakhi-toggle" class="sakhi-button" type="button" title="Chat with Sakhi">
+    <img src="assets/yara-logo.png" alt="Sakhi" />
+  </button>
+
+  <div id="sakhi-panel" class="sakhi-panel hidden">
+    <div class="sakhi-panel-header">
+      <span>🩷 Sakhi</span>
+      <button class="sakhi-close" id="sakhi-close" type="button">&times;</button>
+    </div>
+    <div id="sakhi-messages" class="sakhi-messages"></div>
+    <div class="sakhi-input-row">
+      <input id="sakhi-input" type="text" placeholder="Ask about your cycle, mood..." />
+      <button id="sakhi-send" type="button">Send</button>
+    </div>
+  </div>
+
+</body>
+</html>
