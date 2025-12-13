@@ -1,0 +1,4 @@
+ml_training/
+*.pkl
+*.csv
+requirements.txt
