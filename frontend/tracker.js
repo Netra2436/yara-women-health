@@ -33,187 +33,6 @@ function saveDayLogs(logs) {
   localStorage.setItem(DAY_STORAGE_KEY, JSON.stringify(logs));
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  // ---------- form submit (start + cycle) ----------
-
-  document.getElementById("tracker-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const dateStr = document.getElementById("last_period").value;
-    const cycleDays = parseInt(document.getElementById("cycle_days").value, 10);
-    if (!dateStr || !cycleDays) return;
-
-    const history = loadCycles();
-    history.push({ start: dateStr, cycle: cycleDays });
-    saveCycles(history);
-
-    updateSummaryAndCalendar();
-    e.target.reset();
-  });
-
-  // ---------- Analyse button ----------
-
-  document.getElementById("analyse-btn").addEventListener("click", () => {
-    const cycles = loadCycles();
-    const dayLogs = loadDayLogs();
-    const panel = document.getElementById("analysis-panel");
-    const content = document.getElementById("analysis-content");
-
-    if (!cycles.length && !dayLogs.length) {
-      panel.style.display = "block";
-      content.innerHTML =
-        "Add some periods and daily logs first so Sakhi can understand your pattern.";
-      return;
-    }
-
-    let avgCycle = getAverageCycle(cycles);
-    let cycleComment = "";
-    if (avgCycle) {
-      if (avgCycle >= 26 && avgCycle <= 32) {
-        cycleComment =
-          "Your average cycle length looks within the typical range (around 28 days).";
-      } else if (avgCycle < 26) {
-        cycleComment =
-          "Your average cycle seems on the shorter side. Short cycles can still be normal, but if they worry you, consider discussing with a doctor.";
-      } else {
-        cycleComment =
-          "Your average cycle seems on the longer side. Longer cycles can be normal for some, but if they are very irregular or you miss periods, talk to a doctor.";
-      }
-    }
-
-    const cyclesList = cycles.map(c => c.cycle).sort((a, b) => a - b);
-    let variabilityComment = "";
-    if (cyclesList.length >= 2) {
-      const minC = cyclesList[0];
-      const maxC = cyclesList[cyclesList.length - 1];
-      const spread = maxC - minC;
-      if (spread <= 3) {
-        variabilityComment =
-          "Your cycle lengths look fairly consistent from month to month.";
-      } else if (spread <= 7) {
-        variabilityComment =
-          "There is some variation in your cycle length, which is common.";
-      } else {
-        variabilityComment =
-          "Your cycle lengths vary quite a bit. If this is new for you or combined with very heavy/painful periods, consider medical advice.";
-      }
-    }
-
-    const periodLogs = dayLogs.filter(l => l.isPeriod);
-    const periodDaysCount = periodLogs.length;
-
-    const flowMap = { low: 0, medium: 0, high: 0 };
-    const crampsMap = { low: 0, medium: 0, high: 0 };
-
-    periodLogs.forEach(l => {
-      if (flowMap[l.flow] != null) flowMap[l.flow]++;
-      if (crampsMap[l.cramps] != null) crampsMap[l.cramps]++;
-    });
-
-    const dominantFlow = Object.entries(flowMap).sort((a, b) => b[1] - a[1])[0];
-    const dominantCramps = Object.entries(crampsMap).sort((a, b) => b[1] - a[1])[0];
-
-    let flowComment = "";
-    if (dominantFlow && dominantFlow[1] > 0) {
-      if (dominantFlow[0] === "low" || dominantFlow[0] === "medium") {
-        flowComment =
-          "Your logged flow is mostly " + dominantFlow[0] + ". That can be comfortable for many people.";
-      } else {
-        flowComment =
-          "You often log heavy flow. If you need to change pads very frequently or feel dizzy/very tired, discuss heavy bleeding with a doctor.";
-      }
-    }
-
-    let crampsComment = "";
-    if (dominantCramps && dominantCramps[1] > 0) {
-      if (dominantCramps[0] === "low" || dominantCramps[0] === "medium") {
-        crampsComment =
-          "Your cramps are mostly " + dominantCramps[0] + ". Mild to moderate cramps are common.";
-      } else {
-        crampsComment =
-          "You often log strong cramps. If pain stops you from daily activities, consider medical support and pain management.";
-      }
-    }
-
-    const moodsSample = dayLogs
-      .map(l => (l.mood || "").trim())
-      .filter(m => m.length > 0)
-      .slice(-5);
-    let moodComment = "";
-    if (moodsSample.length) {
-      moodComment =
-        "Recently you noted: " + moodsSample.join(", ") +
-        ". It can help to notice what makes you feel better and keep those habits on heavy days.";
-    }
-
-    panel.style.display = "block";
-    content.innerHTML =
-      `<p><b>Cycles tracked:</b> ${cycles.length || 0}</p>` +
-      (avgCycle ? `<p><b>Average cycle length:</b> ${avgCycle} days.</p>` : "") +
-      (cycleComment ? `<p>${cycleComment}</p>` : "") +
-      (variabilityComment ? `<p>${variabilityComment}</p>` : "") +
-      `<p><b>Total logged period days:</b> ${periodDaysCount}</p>` +
-      (flowComment ? `<p>${flowComment}</p>` : "") +
-      (crampsComment ? `<p>${crampsComment}</p>` : "") +
-      (moodComment ? `<p>${moodComment}</p>` : "") +
-      `<p style="margin-top:0.6rem; font-size:0.85rem; color:#7a4a66;">
-        This analysis is informational, not a diagnosis. If you notice sudden changes,
-        very heavy bleeding, or severe pain, please talk to a healthcare professional.
-      </p>`;
-  });
-
-  // ---------- month slider ----------
-
-  document.getElementById("prev-month").addEventListener("click", () => {
-    viewMonth--;
-    if (viewMonth < 0) {
-      viewMonth = 11;
-      viewYear--;
-    }
-    updateSummaryAndCalendar();
-  });
-
-  document.getElementById("next-month").addEventListener("click", () => {
-    viewMonth++;
-    if (viewMonth > 11) {
-      viewMonth = 0;
-      viewYear++;
-    }
-    updateSummaryAndCalendar();
-  });
-
-  // ---------- modal wiring ----------
-
-  const modalCancel = document.getElementById("modal-cancel");
-  const modalSave = document.getElementById("modal-save");
-
-  if (modalCancel) modalCancel.addEventListener("click", closeModal);
-  if (modalSave) modalSave.addEventListener("click", handleModalSave);
-
-  // ---------- init: sign in anon and sync from Firestore ----------
-
-  (function init() {
-    const today = new Date();
-    viewYear = today.getFullYear();
-    viewMonth = today.getMonth();
-
-    signInAnon()
-      .then((user) => {
-        currentUserId = user.uid;
-        return loadLogsFromFirestore(currentUserId);
-      })
-      .then((cloudLogs) => {
-        if (cloudLogs && cloudLogs.length) {
-          saveDayLogs(cloudLogs);
-        }
-        updateSummaryAndCalendar();
-      })
-      .catch((err) => {
-        console.error("Firebase init failed, using local only:", err);
-        updateSummaryAndCalendar();
-      });
-  })();
-});
-
 // ---------- calculations ----------
 
 function getAverageCycle(history) {
@@ -373,11 +192,7 @@ function renderMonthCalendar(history, dayLogs, year, month, nextDate) {
 // ---------- modal for per-day log ----------
 
 let modalDateKey = null;
-const modalEl = document.getElementById("day-modal");
-const modalTitle = document.getElementById("day-modal-title");
-const modalFlow = document.getElementById("modal-flow");
-const modalCramps = document.getElementById("modal-cramps");
-const modalMood = document.getElementById("modal-mood");
+let modalEl, modalTitle, modalFlow, modalCramps, modalMood;
 
 function openModal(dateKey, existingLog) {
   modalDateKey = dateKey;
@@ -398,11 +213,12 @@ function openModal(dateKey, existingLog) {
   modalCramps.value = (existingLog && existingLog.cramps) || "medium";
   modalMood.value = (existingLog && existingLog.mood) || "";
 
-  modalEl.classList.remove("hidden");
+  // show centered overlay
+  modalEl.style.display = "flex";
 }
 
 function closeModal() {
-  modalEl.classList.add("hidden");
+  modalEl.style.display = "none";
   modalDateKey = null;
 }
 
@@ -440,3 +256,183 @@ function handleModalSave() {
 function handleDayClick(dateKey, existingLog) {
   openModal(dateKey, existingLog);
 }
+
+// ---------- DOM wiring + Firebase init ----------
+
+document.addEventListener("DOMContentLoaded", () => {
+  // form submit
+  document.getElementById("tracker-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const dateStr = document.getElementById("last_period").value;
+    const cycleDays = parseInt(document.getElementById("cycle_days").value, 10);
+    if (!dateStr || !cycleDays) return;
+
+    const history = loadCycles();
+    history.push({ start: dateStr, cycle: cycleDays });
+    saveCycles(history);
+
+    updateSummaryAndCalendar();
+    e.target.reset();
+  });
+
+  // analyse button
+  document.getElementById("analyse-btn").addEventListener("click", () => {
+    const cycles = loadCycles();
+    const dayLogs = loadDayLogs();
+    const panel = document.getElementById("analysis-panel");
+    const content = document.getElementById("analysis-content");
+
+    if (!cycles.length && !dayLogs.length) {
+      panel.style.display = "block";
+      content.innerHTML =
+        "Add some periods and daily logs first so Sakhi can understand your pattern.";
+      return;
+    }
+
+    let avgCycle = getAverageCycle(cycles);
+    let cycleComment = "";
+    if (avgCycle) {
+      if (avgCycle >= 26 && avgCycle <= 32) {
+        cycleComment =
+          "Your average cycle length looks within the typical range (around 28 days).";
+      } else if (avgCycle < 26) {
+        cycleComment =
+          "Your average cycle seems on the shorter side. Short cycles can still be normal, but if they worry you, consider discussing with a doctor.";
+      } else {
+        cycleComment =
+          "Your average cycle seems on the longer side. Longer cycles can be normal for some, but if they are very irregular or you miss periods, talk to a doctor.";
+      }
+    }
+
+    const cyclesList = cycles.map(c => c.cycle).sort((a, b) => a - b);
+    let variabilityComment = "";
+    if (cyclesList.length >= 2) {
+      const minC = cyclesList[0];
+      const maxC = cyclesList[cyclesList.length - 1];
+      const spread = maxC - minC;
+      if (spread <= 3) {
+        variabilityComment =
+          "Your cycle lengths look fairly consistent from month to month.";
+      } else if (spread <= 7) {
+        variabilityComment =
+          "There is some variation in your cycle length, which is common.";
+      } else {
+        variabilityComment =
+          "Your cycle lengths vary quite a bit. If this is new for you or combined with very heavy/painful periods, consider medical advice.";
+      }
+    }
+
+    const dayLogs = loadDayLogs();
+    const periodLogs = dayLogs.filter(l => l.isPeriod);
+    const periodDaysCount = periodLogs.length;
+
+    const flowMap = { low: 0, medium: 0, high: 0 };
+    const crampsMap = { low: 0, medium: 0, high: 0 };
+
+    periodLogs.forEach(l => {
+      if (flowMap[l.flow] != null) flowMap[l.flow]++;
+      if (crampsMap[l.cramps] != null) crampsMap[l.cramps]++;
+    });
+
+    const dominantFlow = Object.entries(flowMap).sort((a, b) => b[1] - a[1])[0];
+    const dominantCramps = Object.entries(crampsMap).sort((a, b) => b[1] - a[1])[0];
+
+    let flowComment = "";
+    if (dominantFlow && dominantFlow[1] > 0) {
+      if (dominantFlow[0] === "low" || dominantFlow[0] === "medium") {
+        flowComment =
+          "Your logged flow is mostly " + dominantFlow[0] + ". That can be comfortable for many people.";
+      } else {
+        flowComment =
+          "You often log heavy flow. If you need to change pads very frequently or feel dizzy/very tired, discuss heavy bleeding with a doctor.";
+      }
+    }
+
+    let crampsComment = "";
+    if (dominantCramps && dominantCramps[1] > 0) {
+      if (dominantCramps[0] === "low" || dominantCramps[0] === "medium") {
+        crampsComment =
+          "Your cramps are mostly " + dominantCramps[0] + ". Mild to moderate cramps are common.";
+      } else {
+        crampsComment =
+          "You often log strong cramps. If pain stops you from daily activities, consider medical support and pain management.";
+      }
+    }
+
+    const moodsSample = dayLogs
+      .map(l => (l.mood || "").trim())
+      .filter(m => m.length > 0)
+      .slice(-5);
+    let moodComment = "";
+    if (moodsSample.length) {
+      moodComment =
+        "Recently you noted: " + moodsSample.join(", ") +
+        ". It can help to notice what makes you feel better and keep those habits on heavy days.";
+    }
+
+    panel.style.display = "block";
+    content.innerHTML =
+      `<p><b>Cycles tracked:</b> ${cycles.length || 0}</p>` +
+      (avgCycle ? `<p><b>Average cycle length:</b> ${avgCycle} days.</p>` : "") +
+      (cycleComment ? `<p>${cycleComment}</p>` : "") +
+      (variabilityComment ? `<p>${variabilityComment}</p>` : "") +
+      `<p><b>Total logged period days:</b> ${periodDaysCount}</p>` +
+      (flowComment ? `<p>${flowComment}</p>` : "") +
+      (crampsComment ? `<p>${crampsComment}</p>` : "") +
+      (moodComment ? `<p>${moodComment}</p>` : "") +
+      `<p style="margin-top:0.6rem; font-size:0.85rem; color:#7a4a66;">
+        This analysis is informational, not a diagnosis. If you notice sudden changes,
+        very heavy bleeding, or severe pain, please talk to a healthcare professional.
+      </p>`;
+  });
+
+  // month slider
+  document.getElementById("prev-month").addEventListener("click", () => {
+    viewMonth--;
+    if (viewMonth < 0) {
+      viewMonth = 11;
+      viewYear--;
+    }
+    updateSummaryAndCalendar();
+  });
+
+  document.getElementById("next-month").addEventListener("click", () => {
+    viewMonth++;
+    if (viewMonth > 11) {
+      viewMonth = 0;
+      viewYear++;
+    }
+    updateSummaryAndCalendar();
+  });
+
+  // modal element refs
+  modalEl = document.getElementById("day-modal");
+  modalTitle = document.getElementById("day-modal-title");
+  modalFlow = document.getElementById("modal-flow");
+  modalCramps = document.getElementById("modal-cramps");
+  modalMood = document.getElementById("modal-mood");
+
+  document.getElementById("modal-cancel").addEventListener("click", closeModal);
+  document.getElementById("modal-save").addEventListener("click", handleModalSave);
+
+  // init: sign in anon and sync from Firestore
+  const today = new Date();
+  viewYear = today.getFullYear();
+  viewMonth = today.getMonth();
+
+  signInAnon()
+    .then((user) => {
+      currentUserId = user.uid;
+      return loadLogsFromFirestore(currentUserId);
+    })
+    .then((cloudLogs) => {
+      if (cloudLogs && cloudLogs.length) {
+        saveDayLogs(cloudLogs);
+      }
+      updateSummaryAndCalendar();
+    })
+    .catch((err) => {
+      console.error("Firebase init failed, using local only:", err);
+      updateSummaryAndCalendar();
+    });
+});
