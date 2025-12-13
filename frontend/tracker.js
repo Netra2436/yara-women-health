@@ -260,7 +260,7 @@ function handleDayClick(dateKey, existingLog) {
 // ---------- DOM wiring + Firebase init ----------
 
 document.addEventListener("DOMContentLoaded", () => {
-  // form submit
+  // form submit (start + cycle)
   document.getElementById("tracker-form").addEventListener("submit", (e) => {
     e.preventDefault();
     const dateStr = document.getElementById("last_period").value;
@@ -275,7 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.target.reset();
   });
 
-  // analyse button
+  // Analyse button
   document.getElementById("analyse-btn").addEventListener("click", () => {
     const cycles = loadCycles();
     const dayLogs = loadDayLogs();
@@ -322,7 +322,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    const dayLogs = loadDayLogs();
     const periodLogs = dayLogs.filter(l => l.isPeriod);
     const periodDaysCount = periodLogs.length;
 
@@ -405,7 +404,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateSummaryAndCalendar();
   });
 
-  // modal element refs
+  // modal element refs + handlers
   modalEl = document.getElementById("day-modal");
   modalTitle = document.getElementById("day-modal-title");
   modalFlow = document.getElementById("modal-flow");

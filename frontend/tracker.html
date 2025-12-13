@@ -49,6 +49,7 @@
       <button id="next-month" type="button" class="nav-tab" style="padding:0.2rem 0.6rem;">▶</button>
     </div>
 
+    <!-- calendar always visible -->
     <div id="calendar" style="margin-top:0.8rem;"></div>
 
     <h3 style="margin-top:1.8rem; text-align:center; color:var(--accent-dark);">
@@ -87,10 +88,11 @@
     </div>
   </div>
 
-  <!-- Modal for per-day logs: WILL BE A CENTERED POPUP -->
-  <div id="day-modal" class="hidden">
+  <!-- Centered popup for per-day logs -->
+  <div id="day-modal">
     <div class="day-modal-content">
       <h3 id="day-modal-title"></h3>
+
       <div>
         <label>
           <input type="radio" name="modal-period" value="yes" /> Period day
@@ -99,6 +101,7 @@
           <input type="radio" name="modal-period" value="no" /> Not a period day
         </label>
       </div>
+
       <div style="margin-top:0.6rem;">
         <label>Flow:
           <select id="modal-flow">
@@ -108,6 +111,7 @@
           </select>
         </label>
       </div>
+
       <div style="margin-top:0.4rem;">
         <label>Cramps:
           <select id="modal-cramps">
@@ -117,11 +121,13 @@
           </select>
         </label>
       </div>
+
       <div style="margin-top:0.4rem;">
         <label>Mood:
           <input type="text" id="modal-mood" />
         </label>
       </div>
+
       <div style="margin-top:0.8rem; text-align:right;">
         <button id="modal-cancel" type="button" class="nav-tab" style="margin-right:0.4rem;">Cancel</button>
         <button id="modal-save" type="button" class="nav-tab">Save</button>
@@ -129,7 +135,7 @@
     </div>
   </div>
 
-  <!-- Your Firebase config + helper functions (signInAnon, loadLogsFromFirestore, saveLogsToFirestore) -->
+  <!-- Your Firebase config + helper functions -->
   <script src="firebase.js"></script>
 
   <!-- Sakhi floating assistant logic -->

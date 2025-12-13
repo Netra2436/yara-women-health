@@ -396,7 +396,18 @@ h3#result {
   border: none;
   background: transparent;
   font-size: 1.1rem;
-  cursor: pointer;
+  cbackground: rgba(0, 0, 0, 0.35);
+  z-index: 1000;
+}
+
+#day-modal .day-modal-content {
+  background: #fff7fb;
+  padding: 1rem 1.2rem;
+  border-radius: 14px;
+  max-width: 360px;
+  width: 90%;
+}
+ursor: pointer;
   color: #82416d;
 }
 
@@ -445,4 +456,22 @@ h3#result {
   background: var(--accent);
   color: #fff;
   cursor: pointer;
+}
+#day-modal {
+  position: fixed;
+  inset: 0;
+  display: none;                 /* hidden until a date is clicked */
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1000;
+}
+
+#day-modal .day-modal-content {
+  background: #fff7fb;
+  padding: 1rem 1.2rem;
+  border-radius: 14px;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: 0 3px 10px rgba(183,110,121,0.35);
 }
