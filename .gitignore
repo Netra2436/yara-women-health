@@ -1,3 +1,14 @@
+# virtual environments
 venv/
-ML/venv/
+myenv/
+
+# python cache
 __pycache__/
+
+# training & datasets (local only)
+ML/
+ml_training/
+*.csv
+
+# unused backend
+backend/
