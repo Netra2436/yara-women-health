@@ -1,10 +1,137 @@
-  <!-- Firebase config + helpers -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>YARA — Period Tracker</title>
+
+  <!-- Firebase compat SDKs (must come BEFORE firebase.js) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="assets/yara-logo.png" alt="YARA Logo" class="logo" />
+      <h1>YARA</h1>
+      <p class="tagline">Period & Cycle Tracker</p>
+
+      <nav class="nav-tabs">
+        <a href="index.html" class="nav-tab">Dashboard</a>
+        <a href="pcos.html" class="nav-tab">PCOS Prediction</a>
+        <a href="tracker.html" class="nav-tab active">Period Tracker</a>
+        <a href="blogs.html" class="nav-tab">Blogs</a>
+      </nav>
+    </header>
+
+    <!-- form for start date + cycle length -->
+    <form id="tracker-form">
+      <div class="form-row">
+        <label for="last_period">Period start date:</label>
+        <input type="date" id="last_period" name="last_period" required />
+      </div>
+      <div class="form-row">
+        <label for="cycle_days">Cycle length (days):</label>
+        <input type="number" id="cycle_days" name="cycle_days" min="15" max="60" required />
+      </div>
+      <button type="submit">Save Period</button>
+    </form>
+
+    <h3 id="tracker-result"></h3>
+
+    <!-- Month slider -->
+    <div style="display:flex; justify-content:center; align-items:center; gap:0.8rem; margin-top:1.8rem;">
+      <button id="prev-month" type="button" class="nav-tab" style="padding:0.2rem 0.6rem;">◀</button>
+      <h3 id="month-title" style="margin:0; color:var(--accent-dark);"></h3>
+      <button id="next-month" type="button" class="nav-tab" style="padding:0.2rem 0.6rem;">▶</button>
+    </div>
+
+    <div id="calendar" style="margin-top:0.8rem;"></div>
+
+    <h3 style="margin-top:1.8rem; text-align:center; color:var(--accent-dark);">
+      Summary Report
+    </h3>
+    <div id="tracker-report" style="margin-top:0.5rem; font-size:0.95rem; color:#4b304a;"></div>
+
+    <!-- Analyse button + analysis panel -->
+    <div style="margin-top:1.2rem; text-align:center;">
+      <button id="analyse-btn" type="button" class="nav-tab" style="padding:0.4rem 1.2rem;">
+        Analyse My Periods
+      </button>
+    </div>
+
+    <div id="analysis-panel"
+         style="margin-top:1rem; padding:1rem 1.2rem; border-radius:14px; background:#fff7fb; box-shadow:0 3px 10px rgba(183,110,121,0.2); display:none;">
+      <h3 style="margin-top:0; color:var(--accent-dark); text-align:center;">Your Period Analysis</h3>
+      <div id="analysis-content" style="font-size:0.95rem; color:#4b304a;"></div>
+    </div>
+  </div>
+
+  <!-- Sakhi floating assistant -->
+  <button id="sakhi-toggle" class="sakhi-button" type="button" title="Chat with Sakhi">
+    <img src="assets/yara-logo.png" alt="Sakhi" />
+  </button>
+
+  <div id="sakhi-panel" class="sakhi-panel hidden">
+    <div class="sakhi-panel-header">
+      <span>🩷 Sakhi</span>
+      <button class="sakhi-close" id="sakhi-close" type="button">&times;</button>
+    </div>
+    <div id="sakhi-messages" class="sakhi-messages"></div>
+    <div class="sakhi-input-row">
+      <input id="sakhi-input" type="text" placeholder="Ask about your cycle, mood..." />
+      <button id="sakhi-send" type="button">Send</button>
+    </div>
+  </div>
+
+  <!-- Modal for per-day logs (make sure these elements exist in your HTML/CSS) -->
+  <div id="day-modal" class="hidden">
+    <h3 id="day-modal-title"></h3>
+    <div>
+      <label>
+        <input type="radio" name="modal-period" value="yes" /> Period day
+      </label>
+      <label>
+        <input type="radio" name="modal-period" value="no" /> Not a period day
+      </label>
+    </div>
+    <div>
+      <label>Flow:
+        <select id="modal-flow">
+          <option value="low">Low</option>
+          <option value="medium" selected>Medium</option>
+          <option value="high">High</option>
+        </select>
+      </label>
+    </div>
+    <div>
+      <label>Cramps:
+        <select id="modal-cramps">
+          <option value="low">Low</option>
+          <option value="medium" selected>Medium</option>
+          <option value="high">High</option>
+        </select>
+      </label>
+    </div>
+    <div>
+      <label>Mood:
+        <input type="text" id="modal-mood" />
+      </label>
+    </div>
+    <button id="modal-cancel" type="button">Cancel</button>
+    <button id="modal-save" type="button">Save</button>
+  </div>
+
+  <!-- Your Firebase config + helper functions (signInAnon, loadLogsFromFirestore, saveLogsToFirestore) -->
   <script src="firebase.js"></script>
 
-  <!-- Sakhi floating assistant logic (separate file) -->
+  <!-- Sakhi floating assistant logic -->
   <script src="sakhi.js"></script>
 
-  <!-- Period tracker logic -->
+  <!-- Period tracker logic (all the JS you moved into tracker.js) -->
   <script src="tracker.js"></script>
 </body>
 </html>
