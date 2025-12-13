@@ -7,21 +7,21 @@ import os
 
 # ---------- Paths ----------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-model_path = os.path.join(BASE_DIR, "../ml_training/model.pkl")
-scaler_path = os.path.join(BASE_DIR, "../ml_training/scaler.pkl")
+model_path = os.path.join(BASE_DIR, "model.pkl")
+scaler_path = os.path.join(BASE_DIR, "scaler.pkl")
 
 # ---------- App init ----------
 app = FastAPI(title="PCOS Prediction API", version="1.0")
 
-# CORS: allow your frontend (change origin if needed)
+# ---------- CORS ----------
+origins = [
+    "https://yara-women-health-9izaivoqn-shriyas-projects-0fb35217.vercel.app",
+    "https://yara-women-health-git-main-shriyas-projects-0fb35217.vercel.app",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-        "http://localhost:5500",
-        "http://127.0.0.1:5500",
-    ],
+    allow_origins=origins,  # or ["*"] while testing
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -64,7 +64,6 @@ def root():
 # ---------- Prediction endpoint ----------
 @app.post("/predict")
 def predict_pcos(data: PCOSInput):
-    # Keep feature order exactly same as training
     vals = [
         data.age,
         data.weight,
@@ -91,7 +90,4 @@ def predict_pcos(data: PCOSInput):
     input_scaled = scaler.transform(input_arr)
     prediction = int(model.predict(input_scaled)[0])
 
-    return {
-        "prediction": prediction,
-        "meaning": "1 = PCOS likely, 0 = unlikely",
-    }
+    return {"prediction": prediction, "meaning": "1 = PCOS likely, 0 = unlikely"}
